@@ -6,6 +6,15 @@ let firstValue = 0;
 let operatorValue = "";
 let awaitingNextValue = false;
 
+const calculate = {
+    "/": (firstNumber, secondNumber) => firstNumber / secondNumber,
+    "*": (firstNumber, secondNumber) => firstNumber * secondNumber,
+    "+": (firstNumber, secondNumber) => firstNumber + secondNumber,
+    "-": (firstNumber, secondNumber) => firstNumber - secondNumber,
+    "=": (firstNumber, secondNumber) => secondNumber,
+};
+
+//Calculate first and second values depending on operator
 const sendNumberValue = (number) => {
     //Replace current value if await next value
     if (awaitingNextValue) {
@@ -29,15 +38,29 @@ const addDecimal = () => {
 
 const useOperator = (operator) => {
     const currentValue = Number(calculatorDisplay.textContent);
+    //Prevent multipleoperator
+    if (operatorValue && awaitingNextValue) {
+        operatorValue = operator;
+        return;
+    }
     //Assing first value if no value
     if (!firstValue) {
         firstValue = currentValue;
     } else {
+        const calculation = calculate[operatorValue](firstValue, currentValue);
+        calculatorDisplay.textContent = calculation;
+        firstValue = calculation;
     }
     awaitingNextValue = true;
     operatorValue = operator;
-    console.log(firstValue);
-    console.log(operator);
+};
+
+//Reset display
+const resetAll = () => {
+    firstValue = 0;
+    operatorValue = "";
+    awaitingNextValue = false;
+    calculatorDisplay.textContent = "0";
 };
 
 //Add Event Listeners for buttons
@@ -53,13 +76,5 @@ inputBtns.forEach((inputBtn) => {
         inputBtn.addEventListener("click", () => addDecimal());
     }
 });
-
-//Reset display
-const resetAll = () => {
-    firstValue = 0;
-    operatorValue = "";
-    awaitingNextValue = false;
-    calculatorDisplay.textContent = "0";
-};
 
 clearBtn.addEventListener("click", resetAll);
